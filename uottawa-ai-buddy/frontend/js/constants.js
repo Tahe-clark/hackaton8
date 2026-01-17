@@ -7,7 +7,11 @@ const PROGRAMS = [
     'Law',
     'Arts and Sciences',
     'Civil Engineering',
-    'Psychology'
+    'Psychology',
+    'Biology',
+    'Mechanical Engineering',
+    'Electrical Engineering',
+    'Other'
 ];
 
 // Liste officielle des intérêts pour le matching IA 

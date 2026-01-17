@@ -9,17 +9,15 @@
 </head>
 <body>
 
-    <!-- tête de page bordeaux -->
     <header class="top-bar">
         <div class="logo-wrapper">
-        <img src="assets/uottawa-logo.png" alt="uOttawa Logo" class="uottawa-logo">
-        <h1 class="logo">UoBuddy</h1>
+            <img src="assets/uottawa-logo.png" alt="uOttawa Logo" class="uottawa-logo">
+            <h1 class="logo">UoBuddy</h1>
         </div>
     </header>
 
     <div class="main-container">
         <div class="onboarding-card">
-            <!-- Barre de progression -->
             <div class="progress-bar">
                 <div class="progress" id="progress"></div>
             </div>
@@ -35,8 +33,6 @@
                     <label>Identity / Background</label>
                     <select id="student-ethnicity" required>
                         <option value="">Select your background</option>
-                        <!--  js/constants.js -->
-                        <!--   <script src="js/constants.js"></script> -->
                     </select>
 
                     <div class="btn-group">
@@ -51,14 +47,10 @@
                     <label>What is your program?</label>
                     <select id="student-program" required>
                         <option value="">Select your program</option>
-                        <!--  js/constants.js -->
-                        <!--   <script src="js/constants.js"></script> -->
                     </select>
 
                     <label>What year are you in?</label>
                     <div class="year-grid" id="year-selector">
-                        <!-- script année tag student-signup.js -->
-                        <!--  <script src="js/student-signup.js"></script> -->
                     </div>
                     
                     <div class="btn-group">
@@ -72,8 +64,6 @@
                     <h2>Your Interests</h2>
                     <p>Pick at least 3 interests to help the AI match you.</p>
                     <div class="interests-grid" id="interests-grid">
-                        <!-- script intéret tag student-signup.js -->
-                        <!--  <script src="js/student-signup.js"></script> -->
                     </div>
                     
                     <div class="btn-group">
@@ -84,6 +74,12 @@
             </form>
         </div>
     </div>
+
+    <!-- les constantes (les listes) -->
+    <script src="js/constants.js"></script>
+    
+    <!--la logique (qui utilise les listes) -->
+    <script src="js/student-signup.js"></script>
 
 </body>
 </html>
