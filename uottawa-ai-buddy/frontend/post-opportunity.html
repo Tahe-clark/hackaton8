@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UoBuddy | Post Opportunity</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- tête de page avec logo et dégradé -->
+    <header class="top-bar">
+        <div class="logo-wrapper">
+            <img src="assets/uottawa-logo.png" alt="uOttawa Logo" class="uottawa-logo">
+            <h1 class="logo">UoBuddy</h1>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="form-card">
+            <h2>Post a New Opportunity</h2>
+            <p>Fill out the details below to reach the right students.</p>
+
+            <form id="opportunity-form">
+                <!-- Section 1 : Informations de base -->
+                <div class="form-section">
+                    <h3>Basic Information</h3>
+                    <label>Title</label>
+                    <input type="text" id="opp-title" placeholder="Ex: AI Research Internship" required>
+                    
+                    <label>Category</label>
+                    <select id="opp-category" required>
+                        <option value="Careers">Careers</option>
+                        <option value="Activities">Activities</option>
+                        <option value="Resources">Resources / Discovered</option>
+                    </select>
+
+                    <label>Description</label>
+                    <textarea id="opp-description" rows="4" placeholder="Describe the opportunity..." required></textarea>
+                </div>
+
+                <!-- Section 2 : Ciblage (Targeting) -->
+                <div class="form-section">
+                    <h3>Target Audience</h3>
+                    <p class="subtitle">Who should see this?</p>
+                    
+                    <label>Target Programs</label>
+                    <div class="checkbox-grid" id="target-programs">
+                        <!--  js/constants.js -->
+                        <!--   <script src="js/constants.js"></script> -->
+                    </div>
+
+                    <label>Target Background</label>
+                    <div class="checkbox-grid" id="target-ethnicity">
+                        <!--  js/constants.js -->
+                        <!--   <script src="js/constants.js"></script> -->
+                    </div>
+
+                    <label>Interests Tags</label>
+                    <div class="interests-grid" id="target-interests">
+                        <!--  js/constants.js -->
+                        <!--   <script src="js/constants.js"></script> -->
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-finish">Post Opportunity</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/constants.js"></script>
+    <script src="js/post-opportunity.js"></script>
+</body>
+</html>
