@@ -110,3 +110,103 @@ body {
 .card:hover .btn-fake {
     background-color: #6a0013; 
 }
+
+/* style pour la page de signup */
+
+/* --- ONBOARDING FORM --- */
+.onboarding-card {
+    background: var(--white);
+    padding: 40px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.step {
+    display: none; 
+}
+
+.step.active {
+    display: block; 
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Barre de progression */
+.progress-bar {
+    background: #eee;
+    height: 8px;
+    border-radius: 4px;
+    margin-bottom: 30px;
+}
+
+.progress {
+    background: var(--uottawa-garnet);
+    height: 100%;
+    width: 33%; 
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* Inputs et sélections */
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+/* Grille d'intérêts (Tags) */
+.interests-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.interest-tag {
+    padding: 8px 15px;
+    background: var(--uottawa-beige);
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.interest-tag.selected {
+    background: var(--uottawa-garnet);
+    color: white;
+    border-color: var(--uottawa-garnet);
+}
+
+/* Boutons de navigation */
+.btn-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn-next, .btn-finish {
+    background: var(--uottawa-garnet);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-back {
+    background: none;
+    border: 1px solid #ddd;
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+}

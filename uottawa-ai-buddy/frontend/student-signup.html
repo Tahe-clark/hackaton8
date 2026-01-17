@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UoBuddy | Your Profile</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- tête de page bordeaux -->
+    <header class="top-bar">
+        <h1 class="logo">UoBuddy</h1>
+    </header>
+
+    <div class="main-container">
+        <div class="onboarding-card">
+            <!-- Barre de progression -->
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+
+            <form id="onboarding-form">
+                <!-- ÉTAPE 1 : Identité & Origine -->
+                <div class="step active" id="step-1">
+                    <h2>Nice to meet you!</h2>
+                    
+                    <label>What's your name?</label>
+                    <input type="text" id="student-name" placeholder="Full name" required>
+                    
+                    <label>Identity / Background</label>
+                    <select id="student-ethnicity" required>
+                        <option value="">Select your background</option>
+                        <!--  js/constants.js -->
+                        <!--   <script src="js/constants.js"></script> -->
+                    </select>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn-next" onclick="nextStep(2)">Next</button>
+                    </div>
+                </div>
+
+                <!-- ÉTAPE 2 : Académique -->
+                <div class="step" id="step-2">
+                    <h2>Your Academic Path</h2>
+                    
+                    <label>What is your program?</label>
+                    <select id="student-program" required>
+                        <option value="">Select your program</option>
+                        <!--  js/constants.js -->
+                        <!--   <script src="js/constants.js"></script> -->
+                    </select>
+
+                    <label>What year are you in?</label>
+                    <div class="year-grid" id="year-selector">
+                        <!-- script année tag student-signup.js -->
+                        <!--  <script src="js/student-signup.js"></script> -->
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button type="button" class="btn-back" onclick="nextStep(1)">Back</button>
+                        <button type="button" class="btn-next" onclick="nextStep(3)">Continue</button>
+                    </div>
+                </div>
+
+                <!-- ÉTAPE 3 : Intérêts -->
+                <div class="step" id="step-3">
+                    <h2>Your Interests</h2>
+                    <p>Pick at least 3 interests to help the AI match you.</p>
+                    <div class="interests-grid" id="interests-grid">
+                        <!-- script intéret tag student-signup.js -->
+                        <!--  <script src="js/student-signup.js"></script> -->
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button type="button" class="btn-back" onclick="nextStep(2)">Back</button>
+                        <button type="submit" class="btn-finish">Explore my Feed</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
