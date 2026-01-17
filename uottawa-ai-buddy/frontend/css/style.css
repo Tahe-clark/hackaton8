@@ -2,10 +2,10 @@
 
 /* --- VARIABLES DE COULEURS --- */
 :root {
-    --uottawa-garnet: #8F001A; 
-    --uottawa-beige: #F9F7F2;  
+    --uottawa-garnet: #8F001A;
+    --uottawa-gold: #FFD100; 
+    --uottawa-beige: #F9F7F2;
     --white: #FFFFFF;
-    --text-dark: #2D2926;      
 }
 
 * {
@@ -24,24 +24,39 @@ body {
     min-height: 100vh; 
 }
 
-/* --- BANDEAU BORDEAUX (TOP BAR) --- */
+/* --- TOP BAR --- */
 .top-bar {
-    background-color: var(--uottawa-garnet);
+    background: linear-gradient(135deg, var(--uottawa-garnet) 0%, #b30021 50%, var(--uottawa-gold) 100%);
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    padding: 15px 30px;
+    padding: 10px 30px;
     z-index: 1000;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espace entre le logo et le texte UoBuddy */
+}
+
+.uottawa-logo {
+    height: 40px; /* Ajuste la taille de l'emblème */
+    width: auto;
+    filter: brightness(0) invert(1); /* Rend le logo blanc pour qu'il ressorte sur le bordeaux */
 }
 
 .logo {
-    color: var(--white); 
+    color: white;
     margin: 0;
-    font-size: 1.5rem;
-    font-weight: 700;
-    text-align: left; 
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* Donne un peu de relief au texte */
 }
 
 /* --- CONTENEUR PRINCIPAL --- */
@@ -209,4 +224,54 @@ input, select {
     padding: 12px 25px;
     border-radius: 8px;
     cursor: pointer;
+}
+
+/* style pour la page de post opportunity */
+
+.form-card {
+    background: var(--white);
+    padding: 40px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 700px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    margin-bottom: 50px;
+}
+
+.form-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.form-section h3 {
+    color: var(--uottawa-garnet);
+    margin-bottom: 15px;
+}
+
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    margin: 10px 0 20px 0;
+    max-height: 200px;
+    overflow-y: auto; 
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+}
+
+textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-family: inherit;
+    margin-top: 5px;
+}
+
+.subtitle {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 10px;
 }
