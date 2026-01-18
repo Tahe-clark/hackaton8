@@ -9,5 +9,8 @@
     { "source": "/", "destination": "/frontend/index.html" },
     { "source": "/(.*).html", "destination": "/frontend/$1.html" },
     { "source": "/(.*)", "destination": "/frontend/$1" }
-  ]
+  ],
+  "dependencies": {
+  "@upstash/redis": "^1.28.4"
+}
 }
