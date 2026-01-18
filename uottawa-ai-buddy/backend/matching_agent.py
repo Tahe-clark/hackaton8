@@ -19,8 +19,8 @@ SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 class MatchingAgent:
     def __init__(self):
         self.matched_count = 0
-        print(" Matching Agent started")
-        print(" Gemini AI matching engine initialized")
+        print("🤖 Matching Agent started")
+        print("🧠 Gemini AI matching engine initialized")
         print("✅ Listening for opportunity events...")
     
     def listen_for_opportunities(self, intake_agent):
@@ -52,7 +52,7 @@ class MatchingAgent:
             
             # Get all students from database
             students = self._get_all_students()
-            print(f" Found {len(students)} students in database")
+            print(f"👥 Found {len(students)} students in database")
             
             if not students:
                 print("⚠️  No students found. Skipping matching.")
@@ -104,7 +104,7 @@ class MatchingAgent:
             
             # Call Gemini API
             response = requests.post(
-                f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={GEMINI_API_KEY}",
+                f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key={GEMINI_API_KEY}",
                 headers={'Content-Type': 'application/json'},
                 json={
                     "contents": [{
@@ -199,26 +199,86 @@ Return ONLY the JSON array, no other text."""
         print("🔄 Using simple fallback matching...")
         matches = []
         
-        target_programs = opportunity.get('target_programs', [])
-        target_years = opportunity.get('target_years', [])
+        # 🔥 FIX: Gérer les None et listes vides
+        target_programs = opportunity.get('target_programs') or []
+        target_years = opportunity.get('target_years') or []
+        target_interests = opportunity.get('target_interests') or []
         
-        for student in students:
-            # Check if student matches criteria
-            program_match = 'All Programs' in target_programs or student['program'] in target_programs
-            year_match = student['year'] in target_years
-            
-            if program_match and year_match:
+        # Si aucun critère, accepter tout le monde
+        if not target_programs and not target_years and not target_interests:
+            for student in students[:15]:  # Limiter à 10
                 matches.append({
                     'student_id': student['id'],
                     'match_score': 75,
-                    'reasoning': f"Matches program ({student['program']}) and year ({student['year']})"
+                    'reasoning': f"Open to all students - {student['program']}, Year {student['year']}"
+                })
+            return matches
+        
+        # Sinon, matcher normalement
+        accept_all_programs = not target_programs or 'All Programs' in target_programs
+        
+        for student in students:
+            score = 50
+            
+            # Program match
+            if accept_all_programs or student['program'] in target_programs:
+                score += 20
+            
+            # Year match
+            if not target_years or student['year'] in target_years:
+                score += 15
+            
+            # Interests match
+            if target_interests and student.get('interests'):
+                matching = set(target_interests) & set(student['interests'])
+                if matching:
+                    score += 15
+            
+            if score >= 65:
+                matches.append({
+                    'student_id': student['id'],
+                    'match_score': min(score, 90),
+                    'reasoning': f"Matches {student['program']}, Year {student['year']}"
                 })
         
-        return matches[:10]  # Limit to top 10
+        return matches[:15]  # Top 15
     
     def _publish_matches(self, opportunity, matches):
-        """Publish match results to Solace"""
+        """Publish matches to Solace AND save to database"""
         try:
+            # 1. Save to database first
+            print(f"\n💾 Saving {len(matches)} matches to database...")
+            
+            saved = 0
+            for match in matches:
+                match_data = {
+                    "student_id": match['student_id'],
+                    "opportunity_id": opportunity.get('id'),
+                    "match_score": match['match_score'],
+                    "reasoning": match['reasoning']
+                }
+                
+                response = requests.post(
+                    f"{SUPABASE_URL}/rest/v1/matches",
+                    headers={
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': f'Bearer {SUPABASE_KEY}',
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    },
+                    json=match_data
+                )
+                
+                if response.status_code == 201:
+                    saved += 1
+                    student_id_short = str(match['student_id'])[:8]
+                    print(f"  ✅ Match saved for student {student_id_short}...")
+                else:
+                    print(f"  ❌ Failed to save match: {response.text}")
+            
+            print(f"✅ Saved {saved}/{len(matches)} matches to database")
+            
+            # 2. Then publish to Solace (simulated)
             event = {
                 "type": "MATCHES_FOUND",
                 "topic": "matches/found",
@@ -231,15 +291,17 @@ Return ONLY the JSON array, no other text."""
                 "timestamp": time.time()
             }
             
-            print(f"\n Publishing matches to Solace topic: matches/found")
+            print(f"\n📢 Publishing to Solace topic: matches/found")
             
-            # Save to file (simulating Solace publish)
+            # Save event (simulating Solace)
             self._save_event(event)
             
             print(f"✅ Published {len(matches)} matches!")
             
         except Exception as e:
             print(f"❌ Error publishing matches: {e}")
+            import traceback
+            traceback.print_exc()
     
     def _save_event(self, event):
         """Save event to file"""
@@ -272,22 +334,22 @@ matching_agent = MatchingAgent()
 
 if __name__ == "__main__":
     print("\n" + "="*60)
-    print(" MATCHING AGENT - Gemini AI Matcher")
+    print("🤖 MATCHING AGENT - Gemini AI Matcher")
     print("="*60)
     
     # Import intake agent to listen to its events
     try:
         from intake_agent import intake_agent
         
-        print("\n Agent is running. Press Ctrl+C to stop.")
-        print(" Listening for new opportunities from Intake Agent...")
+        print("\n⚡ Agent is running. Press Ctrl+C to stop.")
+        print("👂 Listening for new opportunities from Intake Agent...")
         
         # Start listening
         matching_agent.listen_for_opportunities(intake_agent)
         
     except KeyboardInterrupt:
         print("\n\n👋 Matching Agent stopped")
-        print(f" Total matches made: {matching_agent.matched_count}")
+        print(f"📊 Total matches made: {matching_agent.matched_count}")
     except Exception as e:
         print(f"\n❌ Error: {e}")
         print("💡 Make sure intake_agent.py is in the same directory")

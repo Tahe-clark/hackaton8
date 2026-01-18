@@ -317,9 +317,81 @@
     </div>
 
     <script src="js/constants.js"></script>
-    <script src="js/supabase-client.js"></script>
-    <script src="js/gemini-matching.js"></script>
+    <script src="js/supabase-client.js?v=2"></script>
+   <!-- <script src="js/gemini-matching.js"></script>-->
     <script src="js/student-feed.js"></script>
+
+    <!-- Juste avant </body> -->
+
+<!-- 🔥 BOUTON DEBUG POUR TESTER -->
+<button id="auto-login-btn" style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--uottawa-garnet);
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(143, 0, 26, 0.3);
+    z-index: 1000;
+    display: none;
+" onclick="autoLogin()">
+    🔄 Load Test Profile
+</button>
+
+<script>
+// Afficher le bouton seulement si aucune opportunité
+if (document.getElementById('empty-state')) {
+    setTimeout(() => {
+        const emptyState = document.getElementById('empty-state');
+        if (emptyState && emptyState.style.display !== 'none') {
+            document.getElementById('auto-login-btn').style.display = 'block';
+        }
+    }, 2000);
+}
+
+async function autoLogin() {
+    console.log("🔄 Auto-login activé...");
+    
+    // Trouver un student avec des matches
+    const matches = await supabase.getAll("matches");
+    
+    if (matches.length === 0) {
+        alert("❌ Aucun match dans la base ! Lancez: python run_system.py");
+        return;
+    }
+    
+    // Compter les matches par student
+    const studentMatchCount = {};
+    matches.forEach(m => {
+        studentMatchCount[m.student_id] = (studentMatchCount[m.student_id] || 0) + 1;
+    });
+    
+    // Trouver le top student
+    const topStudentId = Object.entries(studentMatchCount)
+        .sort((a, b) => b[1] - a[1])[0][0];
+    
+    // Récupérer ce student
+    const students = await supabase.select("students", { id: topStudentId });
+    
+    if (students.length > 0) {
+        const student = students[0];
+        const matchCount = studentMatchCount[topStudentId];
+        
+        console.log(`✅ Connecté en tant que: ${student.name} (${matchCount} matches)`);
+        
+        // Sauvegarder et recharger
+        localStorage.setItem("student", JSON.stringify(student));
+        location.reload();
+    }
+}
+</script>
+
+</body>
+</html>
 
 </body>
 </html>
