@@ -8,7 +8,7 @@ let selectedInterests = [];
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    console.log(' Student signup page loaded');
+    console.log('📋 Student signup page loaded');
     populateEthnicityDropdown();
     populateProgramDropdown();
     populateYearSelector();
@@ -85,7 +85,7 @@ function populateYearSelector() {
             yearTag.classList.add('active');
             selectedYear = year;
             
-            console.log(` Selected year: ${year}`);
+            console.log(`📌 Selected year: ${year}`);
         });
         
         container.appendChild(yearTag);
@@ -115,7 +115,7 @@ function populateInterestsGrid() {
                 selectedInterests = selectedInterests.filter(i => i !== interest);
             }
             
-            console.log(` Selected interests: ${selectedInterests.length}`);
+            console.log(`🎯 Selected interests: ${selectedInterests.length}`);
             updateSubmitButton();
         });
         
@@ -155,7 +155,7 @@ window.nextStep = function(step) {
     currentStep = step;
     updateProgressBar();
     
-    console.log(` Moved to step ${step}`);
+    console.log(`➡️ Moved to step ${step}`);
 }
 
 // Validate step before proceeding
@@ -217,12 +217,12 @@ function setupFormSubmit() {
             created_at: new Date().toISOString()
         };
         
-        console.log(' Submitting student profile:', studentData);
+        console.log('📝 Submitting student profile:', studentData);
         
         // Show loading state
         const submitBtn = document.querySelector('.btn-finish');
         submitBtn.disabled = true;
-        submitBtn.textContent = ' Creating your profile...';
+        submitBtn.textContent = '⏳ Creating your profile...';
         
         try {
             // Save to database
@@ -231,17 +231,24 @@ function setupFormSubmit() {
             if (result && result.length > 0) {
                 console.log('✅ Profile created successfully!');
                 
-                // Save student ID and data to localStorage
-                localStorage.setItem('studentId', result[0].id);
-                localStorage.setItem('student', JSON.stringify(result[0]));
+                const savedStudent = result[0];
                 
-                // Show success message briefly
+                // Save student ID and data to localStorage
+                localStorage.setItem('studentId', savedStudent.id);
+                localStorage.setItem('student', JSON.stringify(savedStudent));
+                
+                // Show success message
                 submitBtn.textContent = '✅ Profile created!';
                 
+                // 🔥 GENERATE MATCHES AUTOMATICALLY
+                await generateMatchesForNewStudent(savedStudent);
+                
+                // Mark as new user for welcome message
+                localStorage.setItem('isNewUser', 'true');
+                
                 // Redirect to feed page
-                setTimeout(() => {
-                    window.location.href = 'student-feed.html';
-                }, 500);
+                window.location.href = 'student-feed.html';
+                
             } else {
                 throw new Error('Failed to create profile');
             }
@@ -253,4 +260,182 @@ function setupFormSubmit() {
             submitBtn.textContent = 'Explore my Feed';
         }
     });
+}
+
+/*************************************************
+ * AUTO-GENERATE MATCHES FOR NEW STUDENTS
+ *************************************************/
+async function generateMatchesForNewStudent(student) {
+    console.log("🤖 Generating matches for new student...");
+    
+    try {
+        // Afficher un message de chargement
+        showLoadingMessage("Creating your personalized feed...");
+        
+        // Récupérer toutes les opportunités
+        const opportunities = await supabase.getAll("opportunities");
+        console.log(`📊 Found ${opportunities.length} opportunities`);
+        
+        if (opportunities.length === 0) {
+            console.warn("⚠️ No opportunities in database");
+            hideLoadingMessage();
+            return;
+        }
+        
+        let matchesCreated = 0;
+        
+        // Pour chaque opportunité, calculer et créer un match
+        for (const opp of opportunities) {
+            const matchScore = calculateMatchScore(student, opp);
+            
+            // Créer un match si le score est bon (>60%)
+            if (matchScore >= 60) {
+                const reasoning = generateReasoning(student, opp, matchScore);
+                
+                try {
+                    await supabase.insert("matches", {
+                        student_id: student.id,
+                        opportunity_id: opp.id,
+                        match_score: matchScore,
+                        reasoning: reasoning
+                    });
+                    
+                    matchesCreated++;
+                    console.log(`  ✅ Match: ${opp.title} (${matchScore}%)`);
+                } catch (error) {
+                    console.error(`  ❌ Failed to create match: ${error}`);
+                }
+            }
+        }
+        
+        console.log(`🎉 Created ${matchesCreated} matches!`);
+        hideLoadingMessage();
+        
+    } catch (error) {
+        console.error("❌ Error generating matches:", error);
+        hideLoadingMessage();
+    }
+}
+
+function calculateMatchScore(student, opportunity) {
+    let score = 0;
+    let maxScore = 0;
+    
+    // Program match (30 points)
+    const targetPrograms = opportunity.target_programs || [];
+    if (targetPrograms.length > 0) {
+        maxScore += 30;
+        if (targetPrograms.includes("All Programs") || targetPrograms.includes(student.program)) {
+            score += 30;
+        }
+    }
+    
+    // Year match (20 points)
+    const targetYears = opportunity.target_years || [];
+    if (targetYears.length > 0) {
+        maxScore += 20;
+        if (targetYears.includes(student.year)) {
+            score += 20;
+        }
+    }
+    
+    // Interests match (30 points)
+    const targetInterests = opportunity.target_interests || [];
+    if (targetInterests.length > 0 && student.interests && student.interests.length > 0) {
+        maxScore += 30;
+        const matching = targetInterests.filter(i => student.interests.includes(i));
+        if (matching.length > 0) {
+            score += (matching.length / targetInterests.length) * 30;
+        }
+    }
+    
+    // Ethnicity match (20 points)
+    const targetEthnicity = opportunity.target_ethnicity || [];
+    if (targetEthnicity.length > 0 && student.ethnicity && student.ethnicity.length > 0) {
+        maxScore += 20;
+        const matching = targetEthnicity.filter(e => student.ethnicity.includes(e));
+        if (matching.length > 0) {
+            score += 20;
+        }
+    }
+    
+    // Si aucun critère, donner un score de base
+    if (maxScore === 0) {
+        return 70; // Score par défaut pour les opportunités ouvertes à tous
+    }
+    
+    // Retourner le pourcentage
+    return Math.round((score / maxScore) * 100);
+}
+
+function generateReasoning(student, opportunity, score) {
+    const reasons = [];
+    
+    const targetPrograms = opportunity.target_programs || [];
+    if (targetPrograms.includes(student.program) || targetPrograms.includes("All Programs")) {
+        reasons.push(`Perfect for ${student.program} students`);
+    }
+    
+    const targetYears = opportunity.target_years || [];
+    if (targetYears.includes(student.year)) {
+        reasons.push(`Ideal for Year ${student.year}`);
+    }
+    
+    const targetInterests = opportunity.target_interests || [];
+    if (targetInterests.length > 0 && student.interests) {
+        const matching = targetInterests.filter(i => student.interests.includes(i));
+        if (matching.length > 0) {
+            reasons.push(`Matches your interests: ${matching.slice(0, 2).join(", ")}`);
+        }
+    }
+    
+    if (reasons.length === 0) {
+        return "Open to all students";
+    }
+    
+    return reasons.join(" • ");
+}
+
+function showLoadingMessage(message) {
+    // Créer un overlay de chargement
+    const overlay = document.createElement('div');
+    overlay.id = 'match-loading-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(143, 0, 26, 0.95);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        font-family: Inter, sans-serif;
+    `;
+    
+    overlay.innerHTML = `
+        <div style="text-align: center;">
+            <div style="font-size: 4rem; margin-bottom: 20px; animation: bounce 1s infinite;">🤖</div>
+            <h2 style="font-size: 2rem; margin-bottom: 10px;">AI Magic in Progress...</h2>
+            <p style="font-size: 1.2rem; opacity: 0.9;">${message}</p>
+        </div>
+        <style>
+            @keyframes bounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-20px); }
+            }
+        </style>
+    `;
+    
+    document.body.appendChild(overlay);
+}
+
+function hideLoadingMessage() {
+    const overlay = document.getElementById('match-loading-overlay');
+    if (overlay) {
+        overlay.remove();
+    }
 }
