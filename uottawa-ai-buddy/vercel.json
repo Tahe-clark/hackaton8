@@ -2,8 +2,8 @@
   "version": 2,
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/api/stats", "destination": "uottawa-ai-buddy/api/stats.js" },
-    { "source": "/dashboard", "destination": "uottawa-ai-buddy/public/index.html" },
+    { "source": "/api/stats", "destination": "/api/stats.js" },
+    { "source": "/dashboard", "destination": "/public/index.html" },
     { "source": "/", "destination": "/uottawa-ai-buddy/public/index.html" },
     { "source": "/(.*)", "destination": "/uottawa-ai-buddy/public/$1" }
   ]
