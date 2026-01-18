@@ -46,7 +46,7 @@ class NotificationAgent:
                 # No events yet
                 time.sleep(5)
             except Exception as e:
-                print(f"❌ Error: {e}")
+                print(f" Error: {e}")
                 time.sleep(5)
     
     def _read_match_events(self, start_from):
@@ -77,17 +77,17 @@ class NotificationAgent:
             matches = data['matches']
             
             print(f"\n{'='*60}")
-            print(f"📬 NEW MATCHES for: {opportunity_title}")
+            print(f" NEW MATCHES for: {opportunity_title}")
             print(f"{'='*60}")
             print(f" Notifying {len(matches)} students...")
             
             for match in matches:
                 self._notify_student(match, opportunity_title)
             
-            print(f"✅ All notifications sent!")
+            print(f" All notifications sent!")
             
         except Exception as e:
-            print(f"❌ Error processing event: {e}")
+            print(f" Error processing event: {e}")
     
     def _notify_student(self, match, opportunity_title):
         """Send notification to a student"""
@@ -100,7 +100,7 @@ class NotificationAgent:
             student = self._get_student(student_id)
             
             if not student:
-                print(f"  ⚠️  Student {student_id} not found")
+                print(f"   Student {student_id} not found")
                 return
             
             # Create notification
@@ -126,7 +126,7 @@ class NotificationAgent:
             self.notifications_sent += 1
             
         except Exception as e:
-            print(f"  ❌ Error notifying student: {e}")
+            print(f"  Error notifying student: {e}")
     
     def _get_student(self, student_id):
         """Get student details from database"""
@@ -146,7 +146,7 @@ class NotificationAgent:
                 return None
                 
         except Exception as e:
-            print(f"  ⚠️  Error fetching student: {e}")
+            print(f"   Error fetching student: {e}")
             return None
     
     def _log_notification(self, notification):
@@ -156,7 +156,7 @@ class NotificationAgent:
             with open('backend/logs/notifications.json', 'a') as f:
                 f.write(json.dumps(notification) + '\n')
         except Exception as e:
-            print(f"  ⚠️  Error logging notification: {e}")
+            print(f"   Error logging notification: {e}")
     
     def _send_email(self, email, opportunity_title, reasoning):
         """
@@ -193,8 +193,8 @@ if __name__ == "__main__":
         notification_agent.listen_for_matches()
         
     except KeyboardInterrupt:
-        print("\n\n👋 Notification Agent stopped")
+        print("\n\n Notification Agent stopped")
         stats = notification_agent.get_stats()
         print(f" Total notifications sent: {stats['total_sent']}")
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n Error: {e}")

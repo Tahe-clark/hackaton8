@@ -19,9 +19,9 @@ SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 class MatchingAgent:
     def __init__(self):
         self.matched_count = 0
-        print("🤖 Matching Agent started")
-        print("🧠 Gemini AI matching engine initialized")
-        print("✅ Listening for opportunity events...")
+        print(" Matching Agent started")
+        print(" Gemini AI matching engine initialized")
+        print(" Listening for opportunity events...")
     
     def listen_for_opportunities(self, intake_agent):
         """
@@ -35,7 +35,7 @@ class MatchingAgent:
             if events:
                 for event in events:
                     if event['type'] == 'NEW_OPPORTUNITY':
-                        print(f"\n🔔 Received event: {event['topic']}")
+                        print(f"\n Received event: {event['topic']}")
                         self.process_opportunity(event['data'])
                 
                 # Clear processed events
@@ -47,22 +47,22 @@ class MatchingAgent:
         """Process a new opportunity and match to students"""
         try:
             print(f"\n{'='*60}")
-            print(f"🔍 MATCHING: {opportunity['title']}")
+            print(f" MATCHING: {opportunity['title']}")
             print(f"{'='*60}")
             
             # Get all students from database
             students = self._get_all_students()
-            print(f"👥 Found {len(students)} students in database")
+            print(f" Found {len(students)} students in database")
             
             if not students:
-                print("⚠️  No students found. Skipping matching.")
+                print("  No students found. Skipping matching.")
                 return
             
             # Use Gemini AI to find matches
-            print(f"🤖 Analyzing with Gemini AI...")
+            print(f" Analyzing with Gemini AI...")
             matches = self._match_with_gemini(opportunity, students)
             
-            print(f"✅ Found {len(matches)} high-quality matches!")
+            print(f" Found {len(matches)} high-quality matches!")
             
             # Publish matches to Solace
             self._publish_matches(opportunity, matches)
@@ -73,7 +73,7 @@ class MatchingAgent:
             self.matched_count += len(matches)
             
         except Exception as e:
-            print(f"❌ Error processing opportunity: {e}")
+            print(f" Error processing opportunity: {e}")
     
     def _get_all_students(self):
         """Get all student profiles from Supabase"""
@@ -89,11 +89,11 @@ class MatchingAgent:
             if response.status_code == 200:
                 return response.json()
             else:
-                print(f"⚠️  Error fetching students: {response.status_code}")
+                print(f"  Error fetching students: {response.status_code}")
                 return []
                 
         except Exception as e:
-            print(f"❌ Database error: {e}")
+            print(f" Database error: {e}")
             return []
     
     def _match_with_gemini(self, opportunity, students):

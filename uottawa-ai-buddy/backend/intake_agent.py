@@ -26,7 +26,7 @@ class IntakeAgent:
         self.message_queue = []
         print(" Intake Agent started")
         print(f" Connected to Solace at: {SOLACE_HOST}")
-        print("✅ Listening for new opportunities...")
+        print(" Listening for new opportunities...")
     
     def publish_opportunity(self, opportunity_data):
         """
@@ -43,7 +43,7 @@ class IntakeAgent:
             }
             
             print(f"\n Received new opportunity: {opportunity_data.get('title', 'Untitled')}")
-            print(f"📢 Publishing to Solace topic: opportunities/new")
+            print(f" Publishing to Solace topic: opportunities/new")
             
             # Simulate publishing to Solace
             # In production: solace_publisher.publish(event, topic="opportunities/new")
@@ -52,13 +52,13 @@ class IntakeAgent:
             # Log the event
             self._log_event(event)
             
-            print(f"✅ Event published successfully!")
+            print(f" Event published successfully!")
             print(f" Matching agent will now process this opportunity")
             
             return True
             
         except Exception as e:
-            print(f"❌ Error publishing opportunity: {e}")
+            print(f" Error publishing opportunity: {e}")
             return False
     
     def _log_event(self, event):
@@ -108,4 +108,4 @@ if __name__ == "__main__":
                 print(f"\n Pending events: {len(intake_agent.message_queue)}")
     
     except KeyboardInterrupt:
-        print("\n\n👋 Intake Agent stopped")
+        print("\n\n Intake Agent stopped")
