@@ -350,7 +350,7 @@ async function triggerIntakeAgent(opportunity) {
         
     } catch (error) {
         // In demo mode, this is expected if backend isn't running
-        console.log('💡 Note: Run Python agents to see full Solace workflow');
+        console.log(' Note: Run Python agents to see full Solace workflow');
     }
 }
 

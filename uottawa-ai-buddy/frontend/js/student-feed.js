@@ -175,25 +175,25 @@ function displayOpportunities(activeTab = "careers") {
         // Build tags
         let tagsHTML = '<div class="opp-tags">';
         tagsHTML += `<span class="opp-tag type-tag">${opp.type || 'Event'}</span>`;
-        tagsHTML += `<span class="opp-tag match-tag">✨ ${opp.match_score || 'N/A'}% Match</span>`;
+        tagsHTML += `<span class="opp-tag match-tag"> ${opp.match_score || 'N/A'}% Match</span>`;
         if (opp.posted_by === 'Auto-scraper') {
-            tagsHTML += `<span class="opp-tag auto-tag">🤖 AI Discovered</span>`;
+            tagsHTML += `<span class="opp-tag auto-tag"> AI Discovered</span>`;
         }
         tagsHTML += '</div>';
 
         // Build details
         let detailsHTML = '<div class="opp-details">';
         if (opp.event_date) {
-            detailsHTML += `<span class="opp-detail">📅 ${formatDate(opp.event_date)}</span>`;
+            detailsHTML += `<span class="opp-detail"> ${formatDate(opp.event_date)}</span>`;
         }
         if (opp.event_time) {
-            detailsHTML += `<span class="opp-detail">🕐 ${opp.event_time}</span>`;
+            detailsHTML += `<span class="opp-detail"> ${opp.event_time}</span>`;
         }
         if (opp.location) {
-            detailsHTML += `<span class="opp-detail">📍 ${opp.location}</span>`;
+            detailsHTML += `<span class="opp-detail"> ${opp.location}</span>`;
         }
         if (opp.deadline) {
-            detailsHTML += `<span class="opp-detail deadline">⏰ Deadline: ${formatDate(opp.deadline)}</span>`;
+            detailsHTML += `<span class="opp-detail deadline"> Deadline: ${formatDate(opp.deadline)}</span>`;
         }
         detailsHTML += '</div>';
 
@@ -206,9 +206,9 @@ function displayOpportunities(activeTab = "careers") {
             
             <p class="opp-description">${opp.description || ""}</p>
             
-            ${opp.match_reasoning ? `<div class="opp-reasoning">💡 ${opp.match_reasoning}</div>` : ''}
+            ${opp.match_reasoning ? `<div class="opp-reasoning"> ${opp.match_reasoning}</div>` : ''}
             
-            ${opp.amount ? `<p class="opp-amount">💰 ${opp.amount}</p>` : ''}
+            ${opp.amount ? `<p class="opp-amount"> ${opp.amount}</p>` : ''}
             
             ${detailsHTML}
         `;
@@ -242,7 +242,7 @@ function trackClick(opportunity) {
     clickCount++;
     localStorage.setItem('clickCount', clickCount.toString());
     
-    console.log(`📊 Click tracked: ${opportunity.title} (Total: ${clickCount})`);
+    console.log(` Click tracked: ${opportunity.title} (Total: ${clickCount})`);
     
     // Show feedback prompt after 5 clicks
     if (clickCount === 5 || clickCount % 10 === 0) {
@@ -277,13 +277,13 @@ async function handleFeedback(preference) {
             preference: preference
         });
         
-        console.log("✅ Feedback saved");
+        console.log(" Feedback saved");
         
         // Show thank you message
         const prompt = document.getElementById("feedback-prompt");
         prompt.innerHTML = `
             <button class="close-feedback" onclick="closeFeedback()">×</button>
-            <h3>✅ Thank you!</h3>
+            <h3> Thank you!</h3>
             <p>We'll show you more ${preference.replace('_', ' ')} in your feed.</p>
         `;
         

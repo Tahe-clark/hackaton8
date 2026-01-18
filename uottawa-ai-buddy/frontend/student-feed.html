@@ -276,10 +276,10 @@
                 <h3> Quick Check-In</h3>
                 <p>You've clicked <span id="click-count">5</span> opportunities! Help us show you better matches.</p>
                 <div class="feedback-buttons">
-                    <button class="feedback-btn" onclick="handleFeedback('more_careers')">🏢 More Careers</button>
-                    <button class="feedback-btn" onclick="handleFeedback('more_activities')">🎉 More Activities</button>
-                    <button class="feedback-btn" onclick="handleFeedback('more_scholarships')">💰 More Scholarships</button>
-                    <button class="feedback-btn" onclick="handleFeedback('variety')">✨ Show Variety</button>
+                    <button class="feedback-btn" onclick="handleFeedback('more_careers')"> More Careers</button>
+                    <button class="feedback-btn" onclick="handleFeedback('more_activities')"> More Activities</button>
+                    <button class="feedback-btn" onclick="handleFeedback('more_scholarships')"> More Scholarships</button>
+                    <button class="feedback-btn" onclick="handleFeedback('variety')"> Show Variety</button>
                 </div>
             </div>
 
@@ -291,12 +291,12 @@
                     <span class="tab-count" id="careers-count">0</span>
                 </button>
                 <button class="tab-btn" data-category="activities" onclick="switchTab('activities')">
-                    <span class="tab-icon">🎉</span>
+                    <span class="tab-icon"></span>
                     <span>Activities</span>
                     <span class="tab-count" id="activities-count">0</span>
                 </button>
                 <button class="tab-btn" data-category="discovered" onclick="switchTab('discovered')">
-                    <span class="tab-icon">🔍</span>
+                    <span class="tab-icon"></span>
                     <span>Discovered</span>
                     <span class="tab-count" id="discovered-count">0</span>
                 </button>
@@ -307,7 +307,7 @@
 
             <!-- Empty State -->
             <div id="empty-state" class="empty-state" style="display: none;">
-                <div class="empty-icon">📭</div>
+                <div class="empty-icon"></div>
                 <h3>No matches yet</h3>
                 <p>Check back later! New opportunities are added daily.</p>
             </div>
@@ -339,7 +339,7 @@
     z-index: 1000;
     display: none;
 " onclick="autoLogin()">
-    🔄 Load Test Profile
+     Load Test Profile
 </button>
 
 <script>

@@ -3,7 +3,7 @@
 const GEMINI_API_KEY = 'AIzaSyCwTDPDiWdUtsAQWumh9w4dYRwy1h039PI';
 
 async function matchOpportunitiesToStudent(student, allOpportunities) {
-    console.log('🤖 Starting Gemini AI matching...');
+    console.log(' Starting Gemini AI matching...');
     console.log('Student profile:', student);
     console.log('Total opportunities:', allOpportunities.length);
     
@@ -32,17 +32,17 @@ async function matchOpportunitiesToStudent(student, allOpportunities) {
         const data = await response.json();
         const text = data.candidates[0].content.parts[0].text;
         
-        console.log('📝 Gemini response received');
+        console.log(' Gemini response received');
         
         // Parse JSON response
         const matches = parseGeminiResponse(text, allOpportunities);
         
-        console.log(`✅ Gemini matched ${matches.length} opportunities`);
+        console.log(` Gemini matched ${matches.length} opportunities`);
         return matches;
         
     } catch (error) {
         console.error('❌ Gemini error:', error);
-        console.log('🔄 Using fallback simple matching');
+        console.log(' Using fallback simple matching');
         return simpleMatch(student, allOpportunities);
     }
 }
@@ -107,13 +107,13 @@ function parseGeminiResponse(text, allOpportunities) {
         }).filter(m => m.id); // Remove any that didn't find opportunity
         
     } catch (error) {
-        console.error('⚠️ Error parsing Gemini response:', error);
+        console.error(' Error parsing Gemini response:', error);
         return [];
     }
 }
 
 function simpleMatch(student, opportunities) {
-    console.log('🔄 Simple matching fallback');
+    console.log(' Simple matching fallback');
     
     const matches = opportunities.filter(opp => {
         // Check program match
@@ -139,4 +139,4 @@ function simpleMatch(student, opportunities) {
     }));
 }
 
-console.log('✅ Gemini matching engine loaded');
+console.log(' Gemini matching engine loaded');
