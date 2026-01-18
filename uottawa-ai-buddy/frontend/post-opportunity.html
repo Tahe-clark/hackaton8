@@ -6,10 +6,137 @@
     <title>UoBuddy | Post Opportunity</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Additional styles for post page */
+        .post-card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin-bottom: 50px;
+        }
+        
+        .post-card h1 {
+            color: var(--uottawa-garnet);
+            margin-bottom: 10px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-col {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .helper-text {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .helper-text-small {
+            font-size: 0.85rem;
+            color: #999;
+            margin-bottom: 8px;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 10px 0 20px 0;
+        }
+        
+        .filter-grid.scrollable {
+            max-height: 250px;
+            overflow-y: auto;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: var(--uottawa-beige);
+        }
+        
+        .filter-tag {
+            padding: 10px 15px;
+            background: var(--white);
+            border: 2px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        
+        .filter-tag:hover {
+            border-color: var(--uottawa-garnet);
+        }
+        
+        .filter-tag.active {
+            background: var(--uottawa-garnet);
+            color: white;
+            border-color: var(--uottawa-garnet);
+        }
+        
+        /* Year grid matching student signup */
+        .year-grid {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0 20px 0;
+        }
+        
+        .year-tag {
+            padding: 10px 20px;
+            background: var(--uottawa-beige);
+            border: 2px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 600;
+        }
+        
+        .year-tag:hover {
+            border-color: var(--uottawa-garnet);
+        }
+        
+        .year-tag.active {
+            background: var(--uottawa-garnet);
+            color: white;
+            border-color: var(--uottawa-garnet);
+        }
+        
+        /* Success message */
+        .success-message {
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .success-message h3 {
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- tête de page avec logo et dégradé -->
     <header class="top-bar">
         <div class="logo-wrapper">
             <img src="assets/uottawa-logo.png" alt="uOttawa Logo" class="uottawa-logo">
@@ -18,59 +145,154 @@
     </header>
 
     <div class="main-container">
-        <div class="form-card">
-            <h2>Post a New Opportunity</h2>
-            <p>Fill out the details below to reach the right students.</p>
+        <div class="post-card">
+            
+            <h1>Post an Opportunity</h1>
+            <p class="subtitle">Share an event, job, scholarship, or opportunity with uOttawa students</p>
 
-            <form id="opportunity-form">
-                <!-- Section 1 : Informations de base -->
+            <form id="post-opportunity-form">
+                
+                <!-- SECTION 1: Basic Information -->
                 <div class="form-section">
                     <h3>Basic Information</h3>
-                    <label>Title</label>
-                    <input type="text" id="opp-title" placeholder="Ex: AI Research Internship" required>
-                    
-                    <label>Category</label>
-                    <select id="opp-category" required>
-                        <option value="Careers">Careers</option>
-                        <option value="Activities">Activities</option>
-                        <option value="Resources">Resources / Discovered</option>
-                    </select>
 
-                    <label>Description</label>
-                    <textarea id="opp-description" rows="4" placeholder="Describe the opportunity..." required></textarea>
+                    <label>Title *</label>
+                    <input type="text" id="opp-title" placeholder="e.g., Career Fair 2026" required>
+
+                    <label>Description *</label>
+                    <textarea id="opp-description" rows="4" placeholder="Describe the opportunity in detail..." required></textarea>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label>Category *</label>
+                            <select id="opp-category" required>
+                                <option value="careers"> Careers</option>
+                                <option value="activities"> Activities</option>
+                                <option value="discovered"> Discovered</option>
+                            </select>
+                        </div>
+
+                        <div class="form-col">
+                            <label>Type *</label>
+                            <select id="opportunity-type" required>
+                                <option value="Event">Event</option>
+                                <option value="Job/Internship">Job/Internship</option>
+                                <option value="Scholarship">Scholarship</option>
+                                <option value="Workshop">Workshop</option>
+                                <option value="Research Opportunity">Research Opportunity</option>
+                                <option value="Volunteer Opportunity">Volunteer Opportunity</option>
+                            </select>
+                        </div>
+
+                        <div class="form-col">
+                            <label>Posted By *</label>
+                            <input type="text" id="posted-by" placeholder="Your name/organization" required>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Section 2 : Ciblage (Targeting) -->
+                <!-- SECTION 2: Target Audience -->
                 <div class="form-section">
-                    <h3>Target Audience</h3>
-                    <p class="subtitle">Who should see this?</p>
-                    
-                    <label>Target Programs</label>
-                    <div class="checkbox-grid" id="target-programs">
-                        <!--  js/constants.js -->
-                        <!--   <script src="js/constants.js"></script> -->
+                    <h3>Who is this for?</h3>
+                    <p class="helper-text">Select target audience (same options students use in their profiles)</p>
+
+                    <!-- Programs -->
+                    <label>Target Programs *</label>
+                    <p class="helper-text-small">Select which programs this opportunity is for</p>
+                    <div class="filter-grid scrollable" id="target-programs-grid">
+                        <!-- Populated by JavaScript -->
                     </div>
 
-                    <label>Target Background</label>
-                    <div class="checkbox-grid" id="target-ethnicity">
-                        <!--  js/constants.js -->
-                        <!--   <script src="js/constants.js"></script> -->
+                    <!-- Years -->
+                    <label>Target Years *</label>
+                    <p class="helper-text-small">Select which year levels can apply</p>
+                    <div class="year-grid" id="target-years-grid">
+                        <!-- Populated by JavaScript -->
                     </div>
 
-                    <label>Interests Tags</label>
-                    <div class="interests-grid" id="target-interests">
-                        <!--  js/constants.js -->
-                        <!--   <script src="js/constants.js"></script> -->
+                    <!-- Gender (Optional) -->
+                    <label>Target Gender Identity (optional)</label>
+                    <p class="helper-text-small">Select if this opportunity is for specific gender identities</p>
+                    <div class="filter-grid" id="target-gender-grid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+
+                    <!-- Ethnicity (Optional) -->
+                    <label>Target Ethnicity/Background (optional)</label>
+                    <p class="helper-text-small">Select if this opportunity is for specific backgrounds</p>
+                    <div class="filter-grid" id="target-ethnicity-grid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+
+                    <!-- Interests -->
+                    <label>Target Interests</label>
+                    <p class="helper-text-small">Select relevant interests that match this opportunity</p>
+                    <div class="interests-grid scrollable" id="target-interests-grid">
+                        <!-- Populated by JavaScript -->
                     </div>
                 </div>
 
-                <button type="submit" class="btn-finish">Post Opportunity</button>
+                <!-- SECTION 3: Event Details -->
+                <div class="form-section" id="event-details-section">
+                    <h3>Event Details</h3>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label>Event Date</label>
+                            <input type="date" id="event-date">
+                        </div>
+
+                        <div class="form-col">
+                            <label>Event Time</label>
+                            <input type="time" id="event-time">
+                        </div>
+                    </div>
+
+                    <label>Location</label>
+                    <input type="text" id="location" placeholder="e.g., University Centre Room 123">
+
+                    <label>Registration Link</label>
+                    <input type="url" id="registration-link" placeholder="https://...">
+                </div>
+
+                <!-- SECTION 4: Opportunity Details -->
+                <div class="form-section" id="opportunity-details-section" style="display: none;">
+                    <h3>Opportunity Details</h3>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label>Application Deadline</label>
+                            <input type="date" id="deadline">
+                        </div>
+
+                        <div class="form-col">
+                            <label>Amount (for scholarships)</label>
+                            <input type="text" id="amount" placeholder="e.g., $5,000">
+                        </div>
+                    </div>
+
+                    <label>Application Link</label>
+                    <input type="url" id="application-link" placeholder="https://...">
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-finish"> Publish Opportunity</button>
+
             </form>
+
+            <!-- Success Message -->
+            <div id="success-message" class="success-message" style="display: none;">
+                <h3>✅ Opportunity Posted Successfully!</h3>
+                <p>Students will see it in their feed shortly.</p>
+                <button class="btn-next" onclick="location.reload()">Post Another</button>
+            </div>
+
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="js/constants.js"></script>
+    <script src="js/supabase-client.js"></script>
     <script src="js/post-opportunity.js"></script>
+
 </body>
 </html>
