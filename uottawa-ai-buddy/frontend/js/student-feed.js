@@ -1,271 +1,319 @@
-// student-feed.js - Feed page logic with 3 categories
+/*************************************************
+ * STUDENT FEED SCRIPT
+ * - Loads student from localStorage
+ * - Fetches matches from Supabase (via wrapper)
+ * - Joins with opportunities
+ * - Displays personalized feed with beautiful design
+ * - Includes feedback/survey feature
+ *************************************************/
+
+console.log("🚀 Feed page loaded");
 
 let student = null;
-let allOpportunities = {
+let clickCount = 0;
+
+const allOpportunities = {
     careers: [],
     activities: [],
     discovered: []
 };
-let activeCategory = 'careers';
-let clickCount = 0;
 
-// Initialize
-document.addEventListener('DOMContentLoaded', async () => {
-    console.log('🚀 Feed page loaded');
+/*************************************************
+ * INIT
+ *************************************************/
+document.addEventListener("DOMContentLoaded", async () => {
+    console.log("✅ Student feed script loaded");
     await loadStudentAndMatches();
+    
+    // Load click count from localStorage
+    clickCount = parseInt(localStorage.getItem('clickCount') || '0');
 });
 
-// Global functions for HTML onclick handlers
-window.switchTab = function(category) {
-    console.log(`📂 Switching to ${category} tab`);
-    activeCategory = category;
-    
-    // Update tab buttons
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.category === category) {
-            btn.classList.add('active');
-        }
-    });
-    
-    // Display opportunities for this category
-    displayOpportunities();
-}
-
-window.closeFeedback = function() {
-    document.getElementById('feedback-prompt').style.display = 'none';
-}
-
-window.handleFeedback = async function(preference) {
-    console.log('📊 Feedback received:', preference);
-    
-    try {
-        await supabase.insert('feedback', {
-            student_id: student.id,
-            sentiment: 'positive',
-            preference: preference,
-            created_at: new Date().toISOString()
-        });
-        
-        closeFeedback();
-        alert(`Thanks! We'll show you more ${preference.replace('more_', '').replace('_', ' ')}.`);
-        
-    } catch (error) {
-        console.error('Error saving feedback:', error);
-        closeFeedback();
-    }
-}
-
+/*************************************************
+ * LOAD STUDENT + MATCHES
+ *************************************************/
 async function loadStudentAndMatches() {
-    // Get student from localStorage
-    const studentData = localStorage.getItem('student');
-    
+    const studentData = localStorage.getItem("student");
+
     if (!studentData) {
-        console.warn('⚠️ No student profile found, redirecting to signup');
-        window.location.href = 'student-signup.html';
+        console.warn("⚠️ No student found, redirecting...");
+        window.location.href = "student-signup.html";
         return;
     }
-    
+
     student = JSON.parse(studentData);
-    console.log('👤 Student loaded:', student.name);
-    
-    // Update header
-    document.getElementById('student-name').textContent = student.name.split(' ')[0];
-    document.getElementById('student-info').textContent = 
+    console.log("👤 Student loaded:", student.name);
+
+    // Header info
+    const firstName = student.name.split(" ")[0];
+    document.getElementById("student-name").textContent = firstName;
+    document.getElementById("student-info").textContent =
         `${student.program} • Year ${student.year}`;
-    
-    // Get all opportunities from database
-    console.log('📥 Fetching opportunities from database...');
-    let opportunities = [];
+
     try {
-        opportunities = await supabase.getAll('opportunities');
-    } catch (error) {
-        console.error('❌ Error fetching opportunities:', error);
-        opportunities = [];
-    }
-    
-    console.log(`📊 Found ${opportunities.length} total opportunities`);
-    
-    // If no opportunities, show empty state immediately
-    if (opportunities.length === 0) {
-        console.log('⚠️ No opportunities in database - showing empty state');
-        document.getElementById('loading-state').style.display = 'none';
-        document.getElementById('feed-content').style.display = 'block';
-        document.getElementById('opportunities-container').style.display = 'none';
-        document.getElementById('empty-state').style.display = 'block';
-        return;
-    }
-    
-    // Use Gemini to match opportunities to student
-    console.log('🤖 Starting Gemini AI matching...');
-    const matches = await matchOpportunitiesToStudent(student, opportunities);
-    
-    console.log(`✅ Gemini returned ${matches.length} matches`);
-    
-    // Organize matches by category
-    matches.forEach(opp => {
-        if (opp.category === 'careers') {
-            allOpportunities.careers.push(opp);
-        } else if (opp.category === 'activities') {
-            allOpportunities.activities.push(opp);
-        } else if (opp.category === 'discovered') {
-            allOpportunities.discovered.push(opp);
+        console.log("📥 Fetching matches from database...");
+
+        // 1️⃣ Fetch matches (WRAPPER STYLE)
+        const matches = await supabase.select("matches", {
+            student_id: student.id
+        });
+
+        if (!matches || matches.length === 0) {
+            console.log("ℹ️ No matches found");
+            showEmptyState();
+            return;
         }
-    });
-    
-    // Update tab counts
-    document.getElementById('careers-count').textContent = allOpportunities.careers.length;
-    document.getElementById('activities-count').textContent = allOpportunities.activities.length;
-    document.getElementById('discovered-count').textContent = allOpportunities.discovered.length;
-    
-    // Hide loading, show feed
-    document.getElementById('loading-state').style.display = 'none';
-    document.getElementById('feed-content').style.display = 'block';
-    
-    // Display opportunities
-    displayOpportunities();
-    
-    // Check if should show feedback
-    await checkFeedbackTrigger();
+
+        console.log(`📊 Found ${matches.length} matches`);
+
+        // 2️⃣ Fetch related opportunities
+        const opportunityIds = matches.map(m => m.opportunity_id);
+
+        const opportunities = await supabase.selectIn(
+            "opportunities",
+            "id",
+            opportunityIds
+        );
+
+        if (!opportunities || opportunities.length === 0) {
+            throw new Error("Failed to fetch opportunities");
+        }
+
+        // 3️⃣ Merge matches + opportunities
+        const enrichedOpportunities = matches
+            .map(match => {
+                const opp = opportunities.find(
+                    o => o.id === match.opportunity_id
+                );
+
+                if (!opp) return null;
+
+                return {
+                    ...opp,
+                    match_score: match.match_score,
+                    match_reasoning: match.reasoning
+                };
+            })
+            .filter(Boolean);
+
+        // 4️⃣ Sort by match score (best first)
+        enrichedOpportunities.sort(
+            (a, b) => (b.match_score || 0) - (a.match_score || 0)
+        );
+
+        // 5️⃣ Split by category
+        enrichedOpportunities.forEach(opp => {
+            if (opp.category === "careers") {
+                allOpportunities.careers.push(opp);
+            } else if (opp.category === "activities") {
+                allOpportunities.activities.push(opp);
+            } else {
+                allOpportunities.discovered.push(opp);
+            }
+        });
+
+        updateTabCounts();
+        showFeed();
+
+    } catch (error) {
+        console.error("❌ Error loading student feed:", error);
+        showEmptyState();
+    }
 }
 
-function displayOpportunities() {
-    const container = document.getElementById('opportunities-container');
-    const emptyState = document.getElementById('empty-state');
-    const opps = allOpportunities[activeCategory];
-    
-    console.log(`📋 Displaying ${opps.length} opportunities for ${activeCategory}`);
-    
-    if (opps.length === 0) {
-        container.style.display = 'none';
-        emptyState.style.display = 'block';
+/*************************************************
+ * UI HELPERS
+ *************************************************/
+function updateTabCounts() {
+    document.getElementById("careers-count").textContent =
+        allOpportunities.careers.length;
+
+    document.getElementById("activities-count").textContent =
+        allOpportunities.activities.length;
+
+    document.getElementById("discovered-count").textContent =
+        allOpportunities.discovered.length;
+}
+
+function showFeed() {
+    document.getElementById("loading-state").style.display = "none";
+    document.getElementById("feed-content").style.display = "block";
+    displayOpportunities("careers");
+}
+
+function showEmptyState() {
+    document.getElementById("loading-state").style.display = "none";
+    document.getElementById("feed-content").style.display = "block";
+    document.getElementById("empty-state").style.display = "block";
+}
+
+/*************************************************
+ * DISPLAY OPPORTUNITIES (WITH BEAUTIFUL DESIGN)
+ *************************************************/
+function displayOpportunities(activeTab = "careers") {
+    const container = document.getElementById("opportunities-container");
+    container.innerHTML = "";
+
+    const list = allOpportunities[activeTab];
+
+    if (!list || list.length === 0) {
+        document.getElementById("empty-state").style.display = "block";
         return;
     }
-    
-    container.style.display = 'block';
-    emptyState.style.display = 'none';
-    container.innerHTML = '';
-    
-    opps.forEach(opp => {
-        const card = createOpportunityCard(opp);
+
+    document.getElementById("empty-state").style.display = "none";
+
+    list.forEach(opp => {
+        const card = document.createElement("div");
+        card.className = "opportunity-card";
+        
+        // Track clicks for feedback
+        card.addEventListener('click', () => {
+            trackClick(opp);
+        });
+
+        // Build tags
+        let tagsHTML = '<div class="opp-tags">';
+        tagsHTML += `<span class="opp-tag type-tag">${opp.type || 'Event'}</span>`;
+        tagsHTML += `<span class="opp-tag match-tag">✨ ${opp.match_score || 'N/A'}% Match</span>`;
+        if (opp.posted_by === 'Auto-scraper') {
+            tagsHTML += `<span class="opp-tag auto-tag">🤖 AI Discovered</span>`;
+        }
+        tagsHTML += '</div>';
+
+        // Build details
+        let detailsHTML = '<div class="opp-details">';
+        if (opp.event_date) {
+            detailsHTML += `<span class="opp-detail">📅 ${formatDate(opp.event_date)}</span>`;
+        }
+        if (opp.event_time) {
+            detailsHTML += `<span class="opp-detail">🕐 ${opp.event_time}</span>`;
+        }
+        if (opp.location) {
+            detailsHTML += `<span class="opp-detail">📍 ${opp.location}</span>`;
+        }
+        if (opp.deadline) {
+            detailsHTML += `<span class="opp-detail deadline">⏰ Deadline: ${formatDate(opp.deadline)}</span>`;
+        }
+        detailsHTML += '</div>';
+
+        card.innerHTML = `
+            ${tagsHTML}
+            
+            <h3 class="opp-title">${opp.title}</h3>
+            
+            ${opp.organization ? `<p class="opp-posted-by">Posted by ${opp.organization}</p>` : ''}
+            
+            <p class="opp-description">${opp.description || ""}</p>
+            
+            ${opp.match_reasoning ? `<div class="opp-reasoning">💡 ${opp.match_reasoning}</div>` : ''}
+            
+            ${opp.amount ? `<p class="opp-amount">💰 ${opp.amount}</p>` : ''}
+            
+            ${detailsHTML}
+        `;
+
         container.appendChild(card);
     });
 }
 
-function createOpportunityCard(opp) {
-    const card = document.createElement('div');
-    card.className = 'opportunity-card';
-    
-    // Type badges
-    const typeIcons = {
-        'Scholarship': '💰',
-        'Event': '🎉',
-        'Job/Internship': '💼',
-        'Workshop': '🎓',
-        'Research Opportunity': '🔬',
-        'Volunteer Opportunity': '🤝'
-    };
-    
-    const icon = typeIcons[opp.type] || '📌';
-    
-    // Build card HTML
-    card.innerHTML = `
-        <div class="opp-header">
-            <div class="opp-tags">
-                <span class="opp-tag type-tag">${icon} ${opp.type}</span>
-                ${opp.match_score ? `<span class="opp-tag match-tag">✨ ${opp.match_score}% Match</span>` : ''}
-                ${opp.posted_by && opp.posted_by.includes('Auto-scraped') ? '<span class="opp-tag auto-tag">🤖 Auto-discovered</span>' : ''}
-            </div>
-            <h3 class="opp-title">${opp.title}</h3>
-            <p class="opp-posted-by">Posted by ${opp.posted_by || 'Unknown'}</p>
-        </div>
-        
-        <p class="opp-description">${opp.description}</p>
-        
-        ${opp.match_reasoning ? `<p class="opp-reasoning">💡 ${opp.match_reasoning}</p>` : ''}
-        
-        ${opp.amount ? `<p class="opp-amount"><strong>${opp.amount}</strong></p>` : ''}
-        
-        <div class="opp-details">
-            ${opp.event_date ? `<span class="opp-detail">📅 ${formatDate(opp.event_date)}</span>` : ''}
-            ${opp.event_time ? `<span class="opp-detail">🕐 ${opp.event_time}</span>` : ''}
-            ${opp.location ? `<span class="opp-detail">📍 ${opp.location}</span>` : ''}
-            ${opp.deadline ? `<span class="opp-detail deadline">⏰ Deadline: ${formatDate(opp.deadline)}</span>` : ''}
-        </div>
-    `;
-    
-    // Click handler
-    card.addEventListener('click', () => handleOpportunityClick(opp));
-    
-    return card;
+/*************************************************
+ * TAB SWITCHING
+ *************************************************/
+function switchTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll(".tab-btn").forEach(tab => {
+        tab.classList.remove("active");
+    });
+
+    const activeTab = document.querySelector(`.tab-btn[data-category="${tabName}"]`);
+    if (activeTab) {
+        activeTab.classList.add("active");
+    }
+
+    // Display opportunities for this tab
+    displayOpportunities(tabName);
 }
 
-function formatDate(dateString) {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
-
-async function handleOpportunityClick(opp) {
-    console.log('👆 Clicked opportunity:', opp.title);
-    
-    // Track click (SurveyMonkey challenge)
+/*************************************************
+ * FEEDBACK SYSTEM
+ *************************************************/
+function trackClick(opportunity) {
     clickCount++;
+    localStorage.setItem('clickCount', clickCount.toString());
     
-    try {
-        await supabase.insert('interactions', {
-            student_id: student.id,
-            opportunity_id: opp.id,
-            action: 'clicked',
-            created_at: new Date().toISOString()
-        });
-        
-        console.log(`📊 Tracked click (total: ${clickCount})`);
-        
-    } catch (error) {
-        console.error('Error tracking click:', error);
-    }
+    console.log(`📊 Click tracked: ${opportunity.title} (Total: ${clickCount})`);
     
-    // Open link if available
-    const link = opp.registration_link || opp.application_link;
-    if (link) {
-        window.open(link, '_blank');
-    }
-    
-    // Check if should show feedback (every 5 clicks)
-    if (clickCount % 5 === 0) {
+    // Show feedback prompt after 5 clicks
+    if (clickCount === 5 || clickCount % 10 === 0) {
         showFeedbackPrompt();
     }
-}
-
-async function checkFeedbackTrigger() {
-    try {
-        // Get interaction count from database
-        const interactions = await supabase.select('interactions', {
-            student_id: student.id,
-            action: 'clicked'
-        });
-        
-        clickCount = interactions.length;
-        console.log(`📊 Total clicks from database: ${clickCount}`);
-        
-    } catch (error) {
-        console.error('Error checking feedback trigger:', error);
-    }
+    
+    // Save interaction to database
+    saveInteraction(opportunity.id, 'clicked');
 }
 
 function showFeedbackPrompt() {
-    console.log('📊 Showing feedback prompt');
-    const prompt = document.getElementById('feedback-prompt');
-    document.getElementById('click-count').textContent = clickCount;
-    prompt.style.display = 'block';
+    const prompt = document.getElementById("feedback-prompt");
+    document.getElementById("click-count").textContent = clickCount;
+    prompt.style.display = "block";
     
-    // Auto-hide after 30 seconds
-    setTimeout(() => {
-        if (prompt.style.display === 'block') {
-            closeFeedback();
-        }
-    }, 30000);
+    // Scroll to top to show prompt
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-console.log('✅ Student feed script loaded');
+function closeFeedback() {
+    document.getElementById("feedback-prompt").style.display = "none";
+}
+
+async function handleFeedback(preference) {
+    console.log(`📝 Feedback received: ${preference}`);
+    
+    try {
+        // Save feedback to database
+        await supabase.insert("feedback", {
+            student_id: student.id,
+            sentiment: "positive",
+            preference: preference
+        });
+        
+        console.log("✅ Feedback saved");
+        
+        // Show thank you message
+        const prompt = document.getElementById("feedback-prompt");
+        prompt.innerHTML = `
+            <button class="close-feedback" onclick="closeFeedback()">×</button>
+            <h3>✅ Thank you!</h3>
+            <p>We'll show you more ${preference.replace('_', ' ')} in your feed.</p>
+        `;
+        
+        // Close after 3 seconds
+        setTimeout(closeFeedback, 3000);
+        
+    } catch (error) {
+        console.error("❌ Error saving feedback:", error);
+    }
+}
+
+async function saveInteraction(opportunityId, action) {
+    try {
+        await supabase.insert("interactions", {
+            student_id: student.id,
+            opportunity_id: opportunityId,
+            action: action
+        });
+    } catch (error) {
+        console.error("❌ Error saving interaction:", error);
+    }
+}
+
+/*************************************************
+ * UTILITY FUNCTIONS
+ *************************************************/
+function formatDate(dateString) {
+    if (!dateString) return '';
+    
+    const date = new Date(dateString);
+    const options = { month: 'short', day: 'numeric', year: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+}
