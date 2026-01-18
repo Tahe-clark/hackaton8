@@ -1,25 +1,8 @@
 {
   "version": 2,
-  "cleanUrls": true,
   "rewrites": [
     { "source": "/api/stats", "destination": "/api/stats.js" },
-    { "source": "/api/lb", "destination": "/api/lb.js" },
     { "source": "/dashboard", "destination": "/public/index.html" },
-    { 
-      "source": "/", 
-      "destination": "/uottawa-ai-buddy/frontend/student-signup.html" 
-    },
-    { 
-      "source": "/css/(.*)", 
-      "destination": "/uottawa-ai-buddy/frontend/css/$1" 
-    },
-    { 
-      "source": "/js/(.*)", 
-      "destination": "/uottawa-ai-buddy/frontend/js/$1" 
-    },
-    { 
-      "source": "/(.*)", 
-      "destination": "/uottawa-ai-buddy/frontend/$1" 
-    }
+    { "source": "/(.*)", "destination": "/api/lb.js" }
   ]
 }
