@@ -1,16 +1,11 @@
 {
+  "version": 2,
   "cleanUrls": true,
   "rewrites": [
     { "source": "/api/stats", "destination": "/api/stats.js" },
-    { "source": "/test-lb", "destination": "/api/lb.js" },
+    { "source": "/api/lb", "destination": "/api/lb.js" },
     { "source": "/dashboard", "destination": "/public/index.html" },
-    { "source": "/css/(.*)", "destination": "/frontend/css/$1" },
-    { "source": "/js/(.*)", "destination": "/frontend/js/$1" },
     { "source": "/", "destination": "/frontend/index.html" },
-    { "source": "/(.*).html", "destination": "/frontend/$1.html" },
     { "source": "/(.*)", "destination": "/frontend/$1" }
-  ],
-  "dependencies": {
-  "@upstash/redis": "^1.28.4"
-}
+  ]
 }
