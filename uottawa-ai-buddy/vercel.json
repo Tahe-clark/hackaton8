@@ -1,7 +1,8 @@
 {
   "rewrites": [
     { "source": "/api/stats", "destination": "/api/stats.js" },
-    { "source": "/dashboard", "destination": "/index.html" },
+    { "source": "/lb-dashboard", "destination": "/index.html" },
+    { "source": "/frontend/(.*)", "destination": "/frontend/$1" },
     { "source": "/(.*)", "destination": "/api/lb.js" }
   ]
 }
