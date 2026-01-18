@@ -178,6 +178,38 @@ input, select {
     font-size: 1rem;
 }
 
+/* Style pour les années */
+.year-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.year-tag {
+    padding: 10px 20px;
+    background: var(--uottawa-beige);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    text-align: center;
+    flex: 1; 
+    min-width: 100px;
+}
+
+.year-tag:hover {
+    border-color: var(--uottawa-garnet);
+    background: #fff0f0;
+}
+
+.year-tag.active {
+    background: var(--uottawa-garnet) !important;
+    color: white !important;
+    border-color: var(--uottawa-garnet);
+}
+
 /* Grille d'intérêts (Tags) */
 .interests-grid {
     display: flex;
