@@ -56,3 +56,18 @@ export default async function handler(req) {
 
   return response;
 }
+
+
+  // LOGIQUE DE REDIRECTION POUR LES HUMAINS
+  // Au lieu d'aller vers des sites externes, on va vers ton dossier frontend
+  const protocol = req.headers.get('x-forwarded-proto') || 'https';
+  const host = req.headers.get('host');
+  
+  // On redirige l'humain vers la page d'accueil de ton dossier frontend
+  const targetUrl = `${protocol}://${host}/frontend/index.html`;
+
+  return NextResponse.rewrite(new URL('/frontend/index.html', req.url));
+  // OU si tu veux faire du vrai Load Balancing entre deux versions :
+  // const targets = ['/frontend/index.html', '/frontend/student-signup.html'];
+  // const choice = targets[Math.floor(Math.random() * targets.length)];
+  // return NextResponse.rewrite(new URL(choice, req.url));
