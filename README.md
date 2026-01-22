@@ -2,17 +2,17 @@
 
 A smart AI-powered platform that connects University of Ottawa students with career opportunities, clubs, and resources through intelligent matching using Google Gemini AI.
 
-## 🎯 Live Demo
+## Live Demo
 
 **Visit the deployed app**: https://hackaton8-five.vercel.app/uottawa-ai-buddy/frontend/index.html
 
-## 🎯 Project Overview
+## Project Overview
 
 UoBuddy is a hackathon project designed to help University of Ottawa students discover opportunities that match their skills, interests, and goals. The platform uses advanced AI matching to connect:
 - **Students** seeking careers, internships, clubs, and resources
 - **Faculty & Clubs** looking to reach the right student audience
 
-## 🏗️ Architecture
+## Architecture
 
 The project follows a multi-agent architecture with event-driven communication:
 
@@ -20,29 +20,29 @@ The project follows a multi-agent architecture with event-driven communication:
 ┌─────────────────────────────────────────────────────────────┐
 │                    Frontend (HTML/CSS/JS)                   │
 │  • Student Signup & Profile                                 │
-│  • Opportunity Feed                                          │
-│  • Post Opportunities                                        │
+│  • Opportunity Feed                                         │
+│  • Post Opportunities                                       │
 └────────────────────┬────────────────────────────────────────┘
                      │
-┌────────────────────▼────────────────────────────────────────┐
-│                  Backend (Python/Node.js)                   │
-│                                                              │
+┌────────────────────▼──────────────────────────────────────┐
+│                  Backend (Python/Node.js)                 │
+│                                                           │
 │  ┌──────────────────┐      ┌──────────────────────────┐   │
 │  │  Intake Agent    │──┐   │  Matching Agent (Gemini) │   │
 │  │ (receives posts) │  │   │   (AI Matching Engine)   │   │
-│  └──────────────────┘  ├──▶│                          │   │
+│  └──────────────────┘  ├──▶│                         │   │
 │                        │   └──────────────────────────┘   │
-│  ┌──────────────────┐  │                                   │
+│  ┌──────────────────┐  │                                  │
 │  │Notification Agent│  │   ┌──────────────────────────┐   │
-│  │  (sends alerts)  │◀─┴──▶│  Scraper Agent           │   │
+│  │  (sends alerts)  │◀─┴──▶│  Scraper Agent          │   │
 │  └──────────────────┘      │  (data collection)       │   │
 │                            └──────────────────────────┘   │
-└────────────────────┬────────────────────────────────────────┘
+└────────────────────┬──────────────────────────────────────┘
                      │
-┌────────────────────▼────────────────────────────────────────┐
-│            Solace Event Bus (Message Queue)                 │
+┌────────────────────▼───────────────────────────────────────┐
+│            Solace Event Bus (Message Queue)                │
 │         Real-time event streaming & communication          │
-└─────────────────────────────────────────────────────────────┘
+└────────────────────────────────────────────────────────────┘
                      │
 ┌────────────────────▼────────────────────────────────────────┐
 │                   Supabase Database                         │
@@ -50,7 +50,7 @@ The project follows a multi-agent architecture with event-driven communication:
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 uottawa-ai-buddy/
@@ -83,7 +83,7 @@ uottawa-ai-buddy/
 └── README.md                         # This file
 ```
 
-## 🚀 Features
+## Features
 
 ### For Students
 - **Smart Profile**: Create a profile with skills, interests, and career goals
@@ -121,7 +121,7 @@ uottawa-ai-buddy/
 - Multi-agent system for scalability
 - Real-time database synchronization
 
-## 📋 Prerequisites (For Local Development)
+## Prerequisites (For Local Development)
 
 - Python 3.8+
 - Node.js 16+ and npm
@@ -129,7 +129,7 @@ uottawa-ai-buddy/
 - Google Generative AI API key
 - Solace connection credentials
 
-## 🔐 Environment Variables
+## Environment Variables
 
 Create a `.env` file in the `backend/` directory:
 
@@ -147,7 +147,7 @@ SOLACE_USERNAME=your_solace_username
 SOLACE_PASSWORD=your_solace_password
 ```
 
-## ⚙️ Installation & Setup (For Development/Contributors)
+## Installation & Setup (For Development/Contributors)
 
 ### Backend Setup
 
@@ -186,7 +186,7 @@ python -m http.server 8000
 
 **Note**: The frontend is deployed on Vercel and automatically updated on each push to main. For production use, visit: https://hackaton8-five.vercel.app/uottawa-ai-buddy/frontend/index.html
 
-## 🔄 How It Works
+## How It Works
 
 1. **Student Signup**: Student creates profile with skills and interests
 2. **Faculty Post**: Faculty/club posts new opportunity
@@ -195,30 +195,30 @@ python -m http.server 8000
 5. **Notification**: Notification Agent sends alerts to matched students
 6. **Discovery**: Student sees matched opportunities in their feed
 
-## 👥 Multi-Agent System
+## Multi-Agent System
 
 - **Intake Agent**: Entry point for opportunities; publishes to Solace event bus
 - **Matching Agent**: Consumes events; runs AI matching; publishes match results
 - **Notification Agent**: Consumes matches; sends student notifications
 - **Scraper Agent**: Monitors data quality; collects analytics
 
-## 🎓 University of Ottawa Integration
+## University of Ottawa Integration
 
 - Branding and styling aligned with uOttawa guidelines
 - Support for student and faculty authentication
 - Integration with campus resources and systems
 
-## 📝 License
+## License
 
 This project was created for the University of Ottawa Hackathon 8.
 
-## 👨‍💼 Team
+## The Team
 
 Developed by: **UoBuddy Team**
-Marrionne GANNAVI
-Sheila SIEYOJI
-Kris-Evan NGUESSANT
-Clark TAHE
+- Marrionne GANNAVI
+- Sheila SIEYOJI
+- Kris-Evan NGUESSANT
+- Clark TAHE
 
 ---
 
